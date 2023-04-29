@@ -90,13 +90,13 @@ def get_currency_data_days(currency, days):
     return data
 
 def search_currency(currency_from, currency_to, amount):
-    url = f"https://economia.awesomeapi.com.br/last/{currency_from}-{currency_to}"
+    url = API_URL_MOEDA + f"{currency}"
     response = requests.get(url)
-    response.raise_for_status()
     data = response.json()
-    exchange_rate = float(data[f"{currency_from.upper()}{currency_to.upper()}"]["high"])
-    converted_amount = round(amount * exchange_rate, 2)
-    return converted_amount
+    rate = data['rates'][currency_to]
+    converted_amount = amount * rate
+    return f"{amount} {currency_from} = {converted_amount} {currency_to}"
+
 
 currency = st.selectbox(
     "Selecione a moeda desejada:",
@@ -128,53 +128,3 @@ if currency:
 
     except ValueError as e:
         st.error(str(e))
-
-st.subheader("Converter moedas")
-
-currency_list = [
-    "BRL",
-    "USD",
-    "EUR",
-    "BTC",
-    "JPY",
-    "GBP",
-    "AUD",
-    "CAD",
-    "CHF",
-    "CNY",
-    "ARS",
-    "HKD",
-    "ILS",
-    "INR",
-    "KRW",
-    "MXN",
-    "NOK",
-    "NZD",
-    "PLN",
-    "SEK",
-    "SGD",
-    "THB",
-    "TRY",
-    "ZAR"
-]
-
-currency_from = st.selectbox(
-    "Selecione a moeda de origem",
-    currency_list
-)
-
-currency_to = st.selectbox(
-    "Selecione a moeda de destino",
-    currency_list
-)
-
-amount = st.number_input("Insira o valor a ser convertido")
-
-
-if st.button("Converter"):
-    conversion_data = search_currency(currency_from)
-    source_currency = conversion_data["source_currency"]
-    destination_currency = conversion_data["destination_currency"]
-    conversion_rate = float(conversion_data["max_value"])
-    converted_amount = amount * conversion_rate
-    st.write(f"{amount:.2f} {source_currency} = {converted_amount:.2f} {destination_currency}")
