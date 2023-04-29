@@ -15,37 +15,36 @@ def search_cep(cep):
     return response.text
 
 # COTAÇÃO DE MOEDAS
-@app.route('/cotacao/<currency>', methods=['GET'])
-def search_currency(currency):
-    resp = req.get(f'https://economia.awesomeapi.com.br/last/{currency}').text
+@app.route('/cotacao/<moeda>', methods=['GET'])
+def search_moeda(moeda):
+    resp = req.get(f'https://economia.awesomeapi.com.br/last/{moeda}').text
     resp = json.loads(resp)
-    currency_pair = currency.replace("-", "")
+    moeda_pair = moeda.replace("-", "")
     response = {
-        "source_currency": resp[currency_pair]["code"],
-        "destination_currency": resp[currency_pair]["codein"],
-        "currency_name": resp[currency_pair]["name"],
-        "max_value": resp[currency_pair]["high"],
-        "min_value": resp[currency_pair]["low"],
-        "currency_date": resp[currency_pair]["create_date"],
+        "source_moeda": resp[moeda_pair]["code"],
+        "destination_moeda": resp[moeda_pair]["codein"],
+        "moeda_name": resp[moeda_pair]["name"],
+        "max_value": resp[moeda_pair]["high"],
+        "min_value": resp[moeda_pair]["low"],
+        "moeda_date": resp[moeda_pair]["create_date"],
     }
     return response
 
-@app.route('/cotacao/<currency>/<days>', methods=['GET'])
-def search_currency_days(currency, days=1):
-    resp = req.get(f"https://economia.awesomeapi.com.br/json/daily/{currency}/{days}").text
+@app.route('/cotacao/<moeda>/<days>', methods=['GET'])
+def search_moeda_days(moeda, days=1):
+    resp = req.get(f"https://economia.awesomeapi.com.br/json/daily/{moeda}/{days}").text
     resp = json.loads(resp)
     response = []
     for data in resp:
-        dt = datetime.fromtimestamp(int(data['timestamp']))
-        br_tz = pytz.timezone('America/Sao_Paulo')
-        dt_br = dt.astimezone(br_tz)
-        formatted_date = dt_br.strftime('%Y-%m-%d %H:%M:%S %Z%z')
+        date_obj = datetime.fromtimestamp(int(data.get('timestamp', 0)))
+        formatted_date = date_obj.strftime('%Y-%m-%d')
         response.append(
-            {
-                "value": data['high'],
-                "date": formatted_date.split(" ")[0]
-            }
-        )
+    {
+        "value": data.get('high', 0),
+        "date": formatted_date
+    }
+)
+
     return response
 
 if __name__ == '__main__':

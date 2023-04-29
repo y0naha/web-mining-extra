@@ -75,55 +75,55 @@ st.subheader("Cotação de moedas")
 
 API_URL_MOEDA = "http://localhost:5000/cotacao/"
 
-def get_currency_data(currency):
-    url = API_URL_MOEDA + currency
+def get_moeda_data(moeda):
+    url = API_URL_MOEDA + moeda
     response = requests.get(url)
     response.raise_for_status()
     data = response.json()
     return data
 
-def get_currency_data_days(currency, days):
-    url = API_URL_MOEDA + f"{currency}/{days}"
+def get_moeda_data_numero_dias(moeda, numero_dias):
+    url = API_URL_MOEDA + f"{moeda}/{numero_dias}"
     response = requests.get(url)
     response.raise_for_status()
     data = response.json()
     return data
 
-def search_currency(currency_from, currency_to, amount):
-    url = API_URL_MOEDA + f"{currency}"
+def search_moeda(moeda_origem, moeda_destino, quantidade):
+    url = API_URL_MOEDA + f"{moeda}"
     response = requests.get(url)
     data = response.json()
-    rate = data['rates'][currency_to]
-    converted_amount = amount * rate
-    return f"{amount} {currency_from} = {converted_amount} {currency_to}"
+    rate = data['rates'][moeda_destino]
+    conversao_quantidade = quantidade * rate
+    return f"{quantidade} {moeda_origem} = {conversao_quantidade} {moeda_destino}"
 
 
-currency = st.selectbox(
+moeda = st.selectbox(
     "Selecione a moeda desejada:",
     ["USD-BRL", "EUR-BRL", "BTC-BRL", "ETH-BRL"]
 )
 
-if currency:
+if moeda:
     try:
-        currency_data = get_currency_data(currency)
-        st.write("Moeda:", currency_data["currency_name"])
-        st.write("Cotação máxima:", currency_data["max_value"])
-        st.write("Cotação mínima:", currency_data["min_value"])
-        st.write("Data:", currency_data["currency_date"])
+        moeda_data = get_moeda_data(moeda)
+        st.write("Moeda:", moeda_data["moeda_name"])
+        st.write("Cotação máxima:", moeda_data["max_value"])
+        st.write("Cotação mínima:", moeda_data["min_value"])
+        st.write("Data:", moeda_data["moeda_date"])
 
-        days = st.slider(
+        numero_dias = st.slider(
             "Selecione o número de dias para visualizar o histórico:",
             min_value=1,
             max_value=30,
             value=15,
         )
 
-        currency_data_days = get_currency_data_days(currency, days)
+        moeda_data_numero_dias = get_moeda_data_numero_dias(moeda, numero_dias)
 
-        df = pd.DataFrame(currency_data_days)
+        df = pd.DataFrame(moeda_data_numero_dias)
         df["date"] = pd.to_datetime(df["date"])
         fig = go.Figure(data=go.Scatter(x=df["date"], y=df["value"]))
-        fig.update_layout(title=f"Histórico de cotação da moeda {currency_data['currency_name']} nos últimos {days} dias")
+        fig.update_layout(title=f"Histórico de cotação da moeda {moeda_data['moeda_name']} nos últimos {numero_dias} dias")
         st.plotly_chart(fig)
 
     except ValueError as e:
