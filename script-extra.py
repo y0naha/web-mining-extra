@@ -1,14 +1,14 @@
 import requests
 import streamlit as st
-import plotly.express as px
 import os
 from dotenv import load_dotenv
+import folium
+from streamlit_folium import folium_static
 
 load_dotenv()
 
 API_KEY_MAPS = os.getenv("API_KEY_MAPS")
 API_URL_CEP = "http://localhost:5000/cep/"
-
 
 def get_address_data(cep):
     url = API_URL_CEP + cep
@@ -30,13 +30,12 @@ def get_coordinates(address_str):
     return location["lat"], location["lng"]
 
 def plot_location_on_map(lat, lng):
-    df = px.data.gapminder().query("year == 2007")
-    df = df.drop(columns=["year", "pop", "continent"])
-    df = df.rename(columns={"country": "Localidade"})
-    df["lat"] = lat
-    df["lon"] = lng
-    fig = px.scatter_geo(df, lat="lat", lon="lon", hover_name="Localidade")
-    st.plotly_chart(fig)
+    m = folium.Map(location=[lat, lng], zoom_start=15)
+    tooltip = "Aqui está a localização digitada"
+    folium.Marker(
+        [lat, lng], tooltip=tooltip
+    ).add_to(m)
+    folium_static(m)
 
 cep = st.text_input("Digite o CEP:")
 if cep:
