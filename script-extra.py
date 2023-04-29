@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 import folium
 from streamlit_folium import folium_static
 
+# VIA CEP
+st.title("Localizador do CEP🔎")
 load_dotenv()
 
 API_KEY_MAPS = os.getenv("API_KEY_MAPS")
@@ -50,3 +52,15 @@ if cep:
         st.write("Estado:", address_data["uf"])
     except ValueError as e:
         st.error(str(e))
+
+# COTAÇÃO DE MOEDAS
+
+st.title("Conversor de moedas💰")
+
+currency = st.selectbox("Selecione a moeda de origem:", ("USD", "EUR", "BTC", "ARS"))
+value = st.number_input("Digite o valor a ser convertido:", step=0.01)
+
+if st.button("Converter"):
+    response = requests.get(f"http://localhost:5000/convert/{currency}/{value}")
+    result = response.json()["result"]
+    st.success(result)
