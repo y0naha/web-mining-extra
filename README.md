@@ -2,7 +2,7 @@
 Este é um projeto simples que utiliza a API do ViaCEP para obter os dados de endereço de um CEP e, em seguida, usa a API do Google Maps para obter as coordenadas do endereço e exibir em um mapa usando a biblioteca Plotly.
 
 ## Configurando o projeto
-Antes de executar o projeto, é necessário configurar as chaves de acesso às APIs do Google Maps e do ViaCEP. Para isso, siga os seguintes passos:
+Antes de executar o projeto, é necessário configurar as [chaves de acesso às APIs do Google Maps](https://developers.google.com/maps/documentation/geocoding/cloud-setup?hl=pt-br#console_1) e do ViaCEP. Para isso, siga os seguintes passos:
 
 1. Crie um arquivo .env na raiz do projeto.
 2. Adicione as seguintes linhas ao arquivo .env:
