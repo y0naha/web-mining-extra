@@ -70,7 +70,7 @@ st.divider()
 
 # COTAÇÃO DE MOEDAS
 
-st.title("API de Cotações 💰")
+st.title("API de Moeda 💰")
 st.subheader("Cotação de moedas")
 
 API_URL_MOEDA = "http://localhost:5000/cotacao/"
@@ -88,6 +88,14 @@ def get_moeda_data_numero_dias(moeda, numero_dias):
     response.raise_for_status()
     data = response.json()
     return data
+
+def get_moeda_converte_valor(moeda, value):
+    url = API_URL_MOEDA + f"{moeda}/{value}"
+    response = requests.get(url)
+    response.raise_for_status()
+    data = response.json()
+    return data
+
 
 def search_moeda(moeda_origem, moeda_destino, quantidade):
     url = API_URL_MOEDA + f"{moeda}"
@@ -128,3 +136,13 @@ if moeda:
 
     except ValueError as e:
         st.error(str(e))
+
+st.subheader("Conversor de moedas")
+
+currency = st.selectbox("Selecione a moeda de origem:", ("USD", "EUR", "BTC", "ARS"))
+value = st.number_input("Digite o valor a ser convertido:", step=0.01)
+
+if st.button("Converter"):
+    response = get_moeda_converte_valor(moeda, valor)
+    result = response.json()["result"]
+    st.success(result)

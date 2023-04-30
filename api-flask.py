@@ -2,7 +2,6 @@ from flask import Flask
 import requests as req
 import json
 from datetime import datetime
-import pytz
 
 # Larissa Ionafa RA: 1903166
 
@@ -46,6 +45,30 @@ def search_moeda_days(moeda, days=1):
 )
 
     return response
+
+
+@app.route('/convert/<moeda>/<value>', methods=['GET'])
+def convert(moeda, value):
+    url = f'https://economia.awesomeapi.com.br/json/last/USD-BRL,EUR-BRL,BTC-BRL,ARS-BRL'
+    response = requests.get(url)
+    data = response.json()
+
+    if moeda == 'USD':
+        converted_value = float(value) * float(data['USDBRL']['bid'])
+        result = f'{value} USD = {converted_value:.2f} BRL'
+    elif moeda == 'EUR':
+        converted_value = float(value) * float(data['EURBRL']['bid'])
+        result = f'{value} EUR = {converted_value:.2f} BRL'
+    elif moeda == 'BTC':
+        converted_value = float(value) * float(data['BTCBRL']['bid'])
+        result = f'{value} BTC = {converted_value:.2f} BRL'
+    elif moeda == 'ARS':
+        converted_value = float(value) * float(data['ARSBRL']['bid'])
+        result = f'{value} ARS = {converted_value:.2f} BRL'
+    else:
+        result = f'Invalid moeda: {moeda}'
+
+    return jsonify({"result": result})
 
 if __name__ == '__main__':
     app.run(debug=True)
